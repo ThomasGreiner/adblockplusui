@@ -1,0 +1,331 @@
+/*
+ * This file is part of Adblock Plus <https://adblockplus.org/>,
+ * Copyright (C) 2006-2017 eyeo GmbH
+ *
+ * Adblock Plus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation.
+ *
+ * Adblock Plus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+body
+{
+  text-align: center;
+  font-family: sans-serif;
+  font-size: 14px;
+  color: #3E4347;
+}
+
+main,
+[role="dialog"]
+{
+  text-align: start;
+}
+
+main
+{
+  padding: 20px 45px;
+}
+
+h1
+{
+  position: relative;
+  font-size: 1em;
+  line-height: 20px;
+  color: #000;
+}
+
+h1::before
+{
+  position: absolute;
+  left: -25px;
+  width: 20px;
+  height: 20px;
+  background-image: url(abp-32.png);
+  background-size: 20px;
+  content: "";
+}
+
+h2
+{
+  font-size: 1em;
+}
+
+a:link,
+a:visited
+{
+  text-decoration: none;
+  color: #0A9BD0;
+}
+
+#acceptableAds-more
+{
+  white-space: nowrap;
+}
+
+/* Lists */
+
+ul
+{
+  margin: 0;
+  padding: 0;
+}
+
+ul > li
+{
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 36px;
+  padding: 5px 10px;
+  border: 1px solid #BCBCBC;
+  border-bottom: none;
+  list-style: none;
+}
+
+ul > li > span
+{
+  flex: 1;
+  padding: 10px;
+  word-wrap: break-word;
+  overflow: hidden;
+}
+
+/* Form elements */
+
+input[type="text"]
+{
+  padding: 5px 0;
+  border: 0;
+  border-bottom: 1px solid #BCBCBC;
+}
+
+input[type="text"]::placeholder
+{
+  color: #9E9E9E;
+}
+
+.toggle-container
+{
+  display: flex;
+}
+
+.toggle-container > span
+{
+  flex-grow: 1;
+}
+
+.toggle-container input
+{
+  display: none;
+}
+
+.toggle-image
+{
+  display: inline-block;
+  width: 36px;
+  height: 21px;
+  background-image: url(mobile/toggle.png);
+}
+
+input:checked + .toggle-image
+{
+  background-position: 0 -22px;
+}
+
+button
+{
+  width: 100%;
+  height: 36px;
+  border: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #0A9BD0;
+  background: none;
+}
+
+button.primary,
+button.secondary
+{
+  margin: 5px 0;
+  border: 1px solid;
+  border-radius: 2px;
+}
+
+button.primary
+{
+  color: #FFF;
+  border-color: #0A9BD0;
+  background-color: #0A9BD0;
+}
+
+button.secondary
+{
+  border-color: #BCBCBC;
+}
+
+button.remove
+{
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background-image: url(mobile/trash.png);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+ul + button
+{
+  width: 100%;
+  height: 36px;
+  border: 1px solid #BCBCBC;
+}
+
+/* Dialogs */
+
+#dialog
+{
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding-top: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 101;
+}
+
+[role="dialog"]
+{
+  width: calc(100vw - 40px);
+  max-width: 270px;
+  padding: 0;
+  border: 1px solid #BCBCBC;
+  background-color: #FFF;
+}
+
+[role="dialog"] h2
+{
+  margin: 0;
+}
+
+[role="dialog"] form
+{
+  padding: 20px;
+}
+
+[role="dialog"] p
+{
+  display: flex;
+  flex-direction: column;
+}
+
+[role="dialog"] label
+{
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+[role="dialog"] menu
+{
+  display: flex;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #BCBCBC;
+}
+
+[role="dialog"] menu button
+{
+  border-right: 1px solid #BCBCBC;
+}
+
+[role="dialog"] menu button:dir(rtl)
+{
+  border-left: 1px solid #BCBCBC;
+}
+
+[role="dialog"] menu button:last-child
+{
+  border: none;
+}
+
+[role="dialog"] .error
+{
+  color: #F00;
+}
+
+body:not([data-dialog]) #dialog,
+body:not([data-dialog="recommended"]) #dialog-recommended,
+body:not([data-dialog="subscribe"]) #dialog-subscribe
+{
+  display: none;
+}
+
+#dialog-recommended
+{
+  display: flex;
+  flex-direction: column;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+}
+
+#dialog-recommended ul
+{
+  width: auto;
+  margin: 0;
+  overflow-y: auto;
+}
+
+#dialog-recommended ul li
+{
+  border: none;
+}
+
+#dialog-recommended ul li.installed
+{
+  color: #A1A1A1;
+}
+
+#dialog-recommended ul li::before
+{
+  flex-shrink: 0;
+  width: 13px;
+  height: 11px;
+  margin: 10px;
+  content: "";
+}
+
+#dialog-recommended ul li.installed::before
+{
+  background-image: url(mobile/checkmark.png);
+}
+
+#dialog-recommended menu
+{
+  flex-shrink: 0;
+}
+
+[role="dialog"]:not([data-error]) .error,
+#dialog-subscribe:not([data-error="title"]) .error[data-error="title"],
+#dialog-subscribe:not([data-error="url"]) .error[data-error="url"]
+{
+  display: none;
+}
+
+#dialog-subscribe[data-error="title"] [name="title"],
+#dialog-subscribe[data-error="url"] [name="url"]
+{
+  border: 1px solid #F00;
+}

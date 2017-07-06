@@ -438,17 +438,32 @@
   ];
   let knownFilters = filters.map(modules.filterClasses.Filter.fromText);
 
+  let subscriptionServer = "https://easylist-downloads.adblockplus.org";
   let subscriptions = [
-    "https://easylist-downloads.adblockplus.org/easylistgermany+easylist.txt",
-    "https://easylist-downloads.adblockplus.org/exceptionrules.txt",
-    "https://easylist-downloads.adblockplus.org/fanboy-social.txt",
-    "~user~786254"
+    {
+      title: "EasyList Germany+EasyList",
+      url: `${subscriptionServer}/easylistgermany+easylist.txt`
+    },
+    {
+      title: "Allow non-intrusive advertising",
+      url: `${subscriptionServer}/exceptionrules.txt`
+    },
+    {
+      title: "Fanboy's Social Blocking List",
+      url: `${subscriptionServer}/fanboy-social.txt`
+    },
+    {
+      title: null,
+      url: "~user~786254"
+    }
   ];
   let knownSubscriptions = Object.create(null);
-  for (let subscriptionUrl of subscriptions)
+  for (let subscriptionData of subscriptions)
   {
-    knownSubscriptions[subscriptionUrl] =
-      modules.subscriptionClasses.Subscription.fromURL(subscriptionUrl);
+    let subscription =
+      modules.subscriptionClasses.Subscription.fromURL(subscriptionData.url);
+    subscription.title = subscriptionData.title;
+    knownSubscriptions[subscriptionData.url] = subscription;
   }
   let customSubscription = knownSubscriptions["~user~786254"];
 

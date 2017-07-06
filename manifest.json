@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "version": "0.1",
+  "name": "test",
+  "applications": {
+    "gecko": {
+      "id": "test@example.com"
+    }
+  },
+  "options_ui": {
+    "page": "mobile-options.htm",
+    "open_in_tab": true
+  },
+  "background": {
+    "scripts": ["mobile-background.js"]
+  }
+}
