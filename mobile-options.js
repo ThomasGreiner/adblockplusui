@@ -366,5 +366,8 @@ populateLists();
 
 getDocLink("acceptable_ads", (link) =>
 {
-  E("acceptableAds-more").href = link;
+  get("#acceptableAds-more").href = link;
 });
+
+get("#dialog-subscribe [name='title']").placeholder = ext.i18n.getMessage("mops_subscribe_title");
+get("#dialog-subscribe [name='url']").placeholder = ext.i18n.getMessage("mops_subscribe_url");

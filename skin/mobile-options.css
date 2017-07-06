@@ -112,6 +112,11 @@ input[type="text"]::placeholder
   color: #9E9E9E;
 }
 
+input[type="text"]:placeholder-shown + label
+{
+  visibility: hidden
+}
+
 .toggle-container
 {
   display: flex;
@@ -227,14 +232,15 @@ ul + button
 [role="dialog"] p
 {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
+  margin: 5px 0;
 }
 
 [role="dialog"] label
 {
   display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
+  margin: 5px 0;
+  font-size: 10px;
 }
 
 [role="dialog"] menu
@@ -263,7 +269,22 @@ ul + button
 
 [role="dialog"] .error
 {
-  color: #F00;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #D1142A;
+}
+
+[role="dialog"]:not([data-error]) .error,
+#dialog-subscribe:not([data-error="title"]) .error[data-error="title"],
+#dialog-subscribe:not([data-error="url"]) .error[data-error="url"]
+{
+  visibility: hidden;
+}
+
+#dialog-subscribe[data-error="title"] [name="title"],
+#dialog-subscribe[data-error="url"] [name="url"]
+{
+  border-color: #D1142A;
 }
 
 body:not([data-dialog]) #dialog,
@@ -315,17 +336,4 @@ body:not([data-dialog="subscribe"]) #dialog-subscribe
 #dialog-recommended menu
 {
   flex-shrink: 0;
-}
-
-[role="dialog"]:not([data-error]) .error,
-#dialog-subscribe:not([data-error="title"]) .error[data-error="title"],
-#dialog-subscribe:not([data-error="url"]) .error[data-error="url"]
-{
-  display: none;
-}
-
-#dialog-subscribe[data-error="title"] [name="title"],
-#dialog-subscribe[data-error="url"] [name="url"]
-{
-  border: 1px solid #F00;
 }
