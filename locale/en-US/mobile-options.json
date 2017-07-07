@@ -8,6 +8,15 @@
   "mops_action_cancel": {
     "message": "Cancel"
   },
+  "mops_enabled_label": {
+    "message": "Enable Adblock Plus on <strong>$domain$</strong>",
+    "placeholders": {
+      "domain": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
   "mops_error_title": {
     "message": "Please enter a title"
   },

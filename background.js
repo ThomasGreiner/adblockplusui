@@ -73,7 +73,8 @@
     addSubscription: false,
     filterError: false,
     downloadStatus: "synchronize_ok",
-    showNotificationUI: false
+    showNotificationUI: false,
+    showPageOptions: false
   };
   updateFromURL(params);
 
@@ -480,6 +481,24 @@
           url: "http://example.com/custom.txt",
           confirm: true,
           type: "subscriptions.add"
+        }
+      }, "*");
+    }, 1000);
+  }
+
+  if (params.showPageOptions)
+  {
+    // We don't know how long it will take for the page to fully load
+    // so we'll post the message after one second
+    setTimeout(() =>
+    {
+      window.postMessage({
+        type: "message",
+        payload: {
+          type: "app.open",
+          what: "options",
+          action: "showPageOptions",
+          args: ["example.com"]
         }
       }, "*");
     }, 1000);

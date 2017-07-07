@@ -197,7 +197,15 @@
   port.on("app.open", (message, sender) =>
   {
     if (message.what == "options")
-      ext.showOptions();
+    {
+      ext.showOptions(() =>
+      {
+        if (!message.action)
+          return;
+
+        sendMessage("app", message.action, message.args);
+      });
+    }
   });
 
   port.on("filters.add", (message, sender) =>

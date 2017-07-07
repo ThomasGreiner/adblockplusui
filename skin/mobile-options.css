@@ -122,7 +122,7 @@ input[type="text"]:placeholder-shown + label
   display: flex;
 }
 
-.toggle-container > span
+.toggle-container > .grow
 {
   flex-grow: 1;
 }

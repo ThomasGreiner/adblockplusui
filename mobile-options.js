@@ -17,6 +17,9 @@
 
 "use strict";
 
+const {getMessage} = ext.i18n;
+
+let currentHost = null;
 let promisedAcceptableAdsUrl = getAcceptableAdsUrl();
 
 /* Utility functions */
@@ -308,14 +311,28 @@ function onMessage(message)
   switch (message.type)
   {
     case "app.respond": {
-      if (message.action != "addSubscription")
-        return;
-
-      let [subscription] = message.args;
-      setDialog("subscribe", {
-        title: subscription.title,
-        url: subscription.url
-      });
+      switch (message.action)
+      {
+        case "addSubscription":
+          let [subscription] = message.args;
+          setDialog("subscribe", {
+            title: subscription.title,
+            url: subscription.url
+          });
+          break;
+        case "showPageOptions":
+          [currentHost] = message.args;
+          ext.i18n.setElementText(
+            get("#enabled-label"),
+            "mops_enabled_label",
+            [currentHost]
+          );
+          // TODO: NYI
+          // - initialize value
+          // - listen to changes to add/remove filter
+          get("#enabled").checked = true;
+          break;
+      }
       break;
     }
     case "subscriptions.respond": {
@@ -352,7 +369,7 @@ ext.onMessage.addListener(onMessage);
 
 ext.backgroundPage.sendMessage({
   type: "app.listen",
-  filter: ["addSubscription"]
+  filter: ["addSubscription", "showPageOptions"]
 });
 
 ext.backgroundPage.sendMessage({
@@ -369,5 +386,12 @@ getDocLink("acceptable_ads", (link) =>
   get("#acceptableAds-more").href = link;
 });
 
-get("#dialog-subscribe [name='title']").placeholder = ext.i18n.getMessage("mops_subscribe_title");
-get("#dialog-subscribe [name='url']").placeholder = ext.i18n.getMessage("mops_subscribe_url");
+get("#dialog-subscribe [name='title']").setAttribute(
+  "placeholder",
+  getMessage("mops_subscribe_title")
+);
+
+get("#dialog-subscribe [name='url']").setAttribute(
+  "placeholder",
+  getMessage("mops_subscribe_url")
+);

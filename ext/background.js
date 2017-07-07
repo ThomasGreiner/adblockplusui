@@ -80,7 +80,8 @@
 
   window.ext.showOptions = function(callback)
   {
-    if (top.location.href.indexOf("new-options.html") == -1)
+    if (!/\/(?:mobile|new)-options\.html/.test(top.location.href))
+      // TODO: the URL may need to be dependent on platform
       window.open("new-options.html", "_blank");
 
     if (callback)

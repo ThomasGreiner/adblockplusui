@@ -32,6 +32,12 @@
     <main>
       <h1 class="i18n_mops_header"></h1>
 
+      <p class="toggle-container">
+        <label id="enabled-label" for="enabled" class="grow"></label>
+        <input id="enabled" type="checkbox" data-action="toggle-enabled">
+        <label class="toggle-image" for="enabled"></label>
+      </p>
+
       <h2 class="i18n_mops_subscriptions_header"></h2>
 
       <ul id="subscriptions-installed"></ul>
@@ -40,7 +46,7 @@
       </button>
 
       <p class="toggle-container">
-        <span>
+        <span class="grow">
           <label class="i18n_mops_acceptableAds_description checkbox"
               for="acceptableAds">
           </label>
