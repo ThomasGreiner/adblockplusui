@@ -119,7 +119,7 @@ input[type="text"]::placeholder
 
 input[type="text"]:focus::placeholder
 {
-  visibility: hidden;
+  color: transparent;
 }
 
 input[type="text"]:not(:focus):placeholder-shown + label
