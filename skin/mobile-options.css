@@ -218,8 +218,8 @@ ul + button
 
 [role="dialog"]
 {
-  width: calc(100vw - 40px);
-  max-width: 270px;
+  min-width: 270px;
+  max-width: 25em;
   padding: 0;
   border: 1px solid #BCBCBC;
   background-color: #FFF;
