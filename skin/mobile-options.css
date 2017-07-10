@@ -117,7 +117,12 @@ input[type="text"]::placeholder
   color: #9E9E9E;
 }
 
-input[type="text"]:placeholder-shown + label
+input[type="text"]:focus::placeholder
+{
+  visibility: hidden;
+}
+
+input[type="text"]:not(:focus):placeholder-shown + label
 {
   visibility: hidden
 }
