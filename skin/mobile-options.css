@@ -65,6 +65,11 @@ a:visited
   color: #0A9BD0;
 }
 
+[hidden]
+{
+  display: none !important;
+}
+
 #acceptableAds-more
 {
   white-space: nowrap;

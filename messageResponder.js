@@ -203,7 +203,7 @@
         if (!message.action)
           return;
 
-        sendMessage("app", message.action, message.args);
+        sendMessage("app", message.action, ...message.args);
       });
     }
   });

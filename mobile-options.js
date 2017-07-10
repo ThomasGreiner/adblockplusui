@@ -19,7 +19,6 @@
 
 const {getMessage} = ext.i18n;
 
-let currentHost = null;
 let promisedAcceptableAdsUrl = getAcceptableAdsUrl();
 
 /* Utility functions */
@@ -321,16 +320,16 @@ function onMessage(message)
           });
           break;
         case "showPageOptions":
-          [currentHost] = message.args;
+          let [currentHost, isEnabled] = message.args;
           ext.i18n.setElementText(
             get("#enabled-label"),
             "mops_enabled_label",
             [currentHost]
           );
           // TODO: NYI
-          // - initialize value
           // - listen to changes to add/remove filter
-          get("#enabled").checked = true;
+          get("#enabled").checked = isEnabled;
+          get("#enabled-container").hidden = false;
           break;
       }
       break;

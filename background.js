@@ -498,7 +498,7 @@
           type: "app.open",
           what: "options",
           action: "showPageOptions",
-          args: ["example.com"]
+          args: ["example.com", true]
         }
       }, "*");
     }, 1000);

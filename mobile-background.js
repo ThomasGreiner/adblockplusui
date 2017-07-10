@@ -6,7 +6,7 @@ browser.tabs.getCurrent((currentTab) =>
       type: "app.respond",
       action: "showPageOptions",
       // TODO: convert to domain name
-      args: [currentTab.url]
+      args: [currentTab.url, true]
     });
   });
 });
