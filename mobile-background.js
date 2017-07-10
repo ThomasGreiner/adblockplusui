@@ -7,8 +7,7 @@ browser.tabs.getCurrent((currentTab) =>
       action: "showPageOptions",
       args: [
         {
-          // TODO: convert to domain name
-          host: currentTab.url,
+          host: new URL(currentTab.url).host,
           whitelisted: false
         }
       ]
