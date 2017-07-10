@@ -19,6 +19,7 @@
 
 const {getMessage} = ext.i18n;
 
+let whitelistFilter = null;
 let promisedAcceptableAdsUrl = getAcceptableAdsUrl();
 
 /* Utility functions */
@@ -305,38 +306,69 @@ function onSubmit(ev)
 }
 document.addEventListener("submit", onSubmit);
 
-function onMessage(message)
+function onToggleWhitelistFilter(ev)
 {
-  switch (message.type)
+  let checkbox = ev.target;
+  ext.backgroundPage.sendMessage(
+    {
+      type: (checkbox.checked) ? "filters.remove" : "filters.add",
+      text: whitelistFilter
+    }, (errors) =>
+    {
+      if (errors.length < 1)
+        return;
+
+      console.error(errors);
+      checkbox.checked = !checkbox.checked;
+    }
+  );
+  ev.preventDefault();
+}
+
+function onMessage(msg)
+{
+  switch (msg.type)
   {
     case "app.respond": {
-      switch (message.action)
+      switch (msg.action)
       {
         case "addSubscription":
-          let [subscription] = message.args;
+          let [subscription] = msg.args;
           setDialog("subscribe", {
             title: subscription.title,
             url: subscription.url
           });
           break;
         case "showPageOptions":
-          let [currentHost, isEnabled] = message.args;
+          let [{host, whitelisted}] = msg.args;
+          whitelistFilter = `@@||${host}^$document`;
+
           ext.i18n.setElementText(
             get("#enabled-label"),
             "mops_enabled_label",
-            [currentHost]
+            [host]
           );
-          // TODO: NYI
-          // - listen to changes to add/remove filter
-          get("#enabled").checked = isEnabled;
+
+          let checkbox = get("#enabled");
+          checkbox.checked = !whitelisted;
+          checkbox.addEventListener("click", onToggleWhitelistFilter);
+
           get("#enabled-container").hidden = false;
           break;
       }
       break;
     }
+    case "filters.respond": {
+      let [filter] = msg.args;
+      if (!whitelistFilter || filter.text != whitelistFilter)
+        break;
+
+      get("#enabled").checked = (msg.action == "removed");
+      break;
+    }
     case "subscriptions.respond": {
-      let [subscription] = message.args;
-      switch (message.action)
+      let [subscription] = msg.args;
+      switch (msg.action)
       {
         case "added":
           setSubscription(subscription, true);
@@ -369,6 +401,11 @@ ext.onMessage.addListener(onMessage);
 ext.backgroundPage.sendMessage({
   type: "app.listen",
   filter: ["addSubscription", "showPageOptions"]
+});
+
+ext.backgroundPage.sendMessage({
+  type: "filters.listen",
+  filter: ["added", "removed"]
 });
 
 ext.backgroundPage.sendMessage({

@@ -5,8 +5,13 @@ browser.tabs.getCurrent((currentTab) =>
     browser.tabs.sendMessage(optionsTab.id, {
       type: "app.respond",
       action: "showPageOptions",
-      // TODO: convert to domain name
-      args: [currentTab.url, true]
+      args: [
+        {
+          // TODO: convert to domain name
+          host: currentTab.url,
+          whitelisted: false
+        }
+      ]
     });
   });
 });

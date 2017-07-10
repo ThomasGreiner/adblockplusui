@@ -492,13 +492,20 @@
     // so we'll post the message after one second
     setTimeout(() =>
     {
+      let isWhitelisted = customSubscription.filters
+        .some((filter) => filter.text == `@@||example.com^$document`);
       window.postMessage({
         type: "message",
         payload: {
           type: "app.open",
           what: "options",
           action: "showPageOptions",
-          args: ["example.com", true]
+          args: [
+            {
+              host: "example.com",
+              whitelisted: isWhitelisted
+            }
+          ]
         }
       }, "*");
     }, 1000);

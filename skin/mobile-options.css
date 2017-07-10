@@ -140,6 +140,7 @@ input[type="text"]:placeholder-shown + label
 .toggle-image
 {
   display: inline-block;
+  flex-shrink: 0;
   width: 36px;
   height: 21px;
   background-image: url(mobile/toggle.png);
