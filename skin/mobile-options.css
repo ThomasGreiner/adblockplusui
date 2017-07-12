@@ -331,7 +331,8 @@ body:not([data-dialog="subscribe"]) #dialog-subscribe
 
 #dialog-recommended ul li.installed::before
 {
-  background-image: url(mobile/checkmark.png);
+  background-color: #A1A1A1;
+  mask: url(mobile/checkmark.svg) center/cover no-repeat;
 }
 
 #dialog-recommended menu
