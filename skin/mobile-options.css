@@ -107,6 +107,7 @@ ul > li > span
 
 input[type="text"]
 {
+  min-width: 220px;
   padding: 5px 0;
   border: 0;
   border-bottom: 1px solid #BCBCBC;
@@ -223,7 +224,6 @@ ul + button
 
 [role="dialog"]
 {
-  min-width: 270px;
   max-width: 25em;
   padding: 0;
   border: 1px solid #BCBCBC;
