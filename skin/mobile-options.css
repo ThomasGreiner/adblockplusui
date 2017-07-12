@@ -123,7 +123,8 @@ input[type="text"]:focus::placeholder
   color: transparent;
 }
 
-input[type="text"]:not(:focus):placeholder-shown + label
+input[type="text"]:not(:focus):placeholder-shown ~ label,
+input[type="text"]:not(:placeholder-shown) ~ .error
 {
   visibility: hidden
 }
@@ -243,12 +244,13 @@ ul + button
 [role="dialog"] p
 {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   margin: 5px 0;
 }
 
 [role="dialog"] label
 {
+  order: 1;
   display: block;
   margin: 5px 0;
   font-size: 10px;
@@ -262,8 +264,14 @@ ul + button
   border-top: 1px solid #BCBCBC;
 }
 
+[role="dialog"] input[type="text"]
+{
+  order: 2;
+}
+
 [role="dialog"] .error
 {
+  order: 3;
   margin-top: 5px;
   font-size: 12px;
   color: #D1142A;
@@ -276,8 +284,8 @@ ul + button
   visibility: hidden;
 }
 
-#dialog-subscribe[data-error="title"] [name="title"],
-#dialog-subscribe[data-error="url"] [name="url"]
+#dialog-subscribe[data-error="title"] [name="title"]:placeholder-shown,
+#dialog-subscribe[data-error="url"] [name="url"]:placeholder-shown
 {
   border-color: #D1142A;
 }
