@@ -48,8 +48,7 @@ h1::before
   left: -25px;
   width: 20px;
   height: 20px;
-  background-image: url(abp-32.png);
-  background-size: 20px;
+  background: url(mobile/abp-logo.svg) 0/20px;
   content: "";
 }
 
@@ -195,9 +194,8 @@ button.remove
   width: 36px;
   height: 36px;
   padding: 0;
-  background-image: url(mobile/trash.png);
-  background-position: center;
-  background-repeat: no-repeat;
+  background-color: #0A9BD0;
+  mask: url(mobile/trash.svg) center/19px no-repeat;
 }
 
 ul + button
