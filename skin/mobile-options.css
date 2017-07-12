@@ -159,7 +159,7 @@ input:checked + .toggle-image
 button
 {
   width: 100%;
-  height: 36px;
+  height: 45px;
   border: none;
   font-weight: 600;
   text-transform: uppercase;
@@ -170,6 +170,7 @@ button
 button.primary,
 button.secondary
 {
+  height: 36px;
   margin: 5px 0;
   border: 1px solid;
   border-radius: 2px;
@@ -200,7 +201,6 @@ button.remove
 ul + button
 {
   width: 100%;
-  height: 36px;
   border: 1px solid #BCBCBC;
 }
 
@@ -257,25 +257,9 @@ ul + button
 [role="dialog"] menu
 {
   display: flex;
-  height: 36px;
   margin: 0;
   padding: 0;
   border-top: 1px solid #BCBCBC;
-}
-
-[role="dialog"] menu button
-{
-  border-right: 1px solid #BCBCBC;
-}
-
-[role="dialog"] menu button:dir(rtl)
-{
-  border-left: 1px solid #BCBCBC;
-}
-
-[role="dialog"] menu button:last-child
-{
-  border: none;
 }
 
 [role="dialog"] .error
