@@ -269,11 +269,11 @@
   }
   document.addEventListener("change", onChange);
 
-  function toggleWhitelistFilter(checkbox)
+  function toggleWhitelistFilter(toggle)
   {
     ext.backgroundPage.sendMessage(
       {
-        type: (checkbox.checked) ? "filters.remove" : "filters.add",
+        type: (toggle.checked) ? "filters.remove" : "filters.add",
         text: whitelistFilter
       }, (errors) =>
       {
@@ -281,7 +281,7 @@
           return;
 
         console.error(errors);
-        checkbox.checked = !checkbox.checked;
+        toggle.checked = !toggle.checked;
       }
     );
     ev.preventDefault();
@@ -352,8 +352,8 @@
               [host]
             );
 
-            let checkbox = get("#enabled");
-            checkbox.checked = !whitelisted;
+            let toggle = get("#enabled");
+            toggle.checked = !whitelisted;
 
             get("#enabled-container").hidden = false;
             break;
