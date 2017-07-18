@@ -271,19 +271,26 @@
 
   function toggleWhitelistFilter(toggle)
   {
-    ext.backgroundPage.sendMessage(
-      {
-        type: (toggle.checked) ? "filters.remove" : "filters.add",
-        text: whitelistFilter
-      }, (errors) =>
-      {
-        if (errors.length < 1)
-          return;
+    if (whitelistFilter)
+    {
+      ext.backgroundPage.sendMessage(
+        {
+          type: (toggle.checked) ? "filters.remove" : "filters.add",
+          text: whitelistFilter
+        }, (errors) =>
+        {
+          if (errors.length < 1)
+            return;
 
-        console.error(errors);
-        toggle.checked = !toggle.checked;
-      }
-    );
+          console.error(errors);
+          toggle.checked = !toggle.checked;
+        }
+      );
+    }
+    else
+    {
+      console.error("Whitelist filter hasn't been initialized yet");
+    }
     ev.preventDefault();
   }
 
