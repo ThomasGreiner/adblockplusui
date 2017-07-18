@@ -22,6 +22,7 @@
 {
   const {getMessage} = ext.i18n;
 
+  const dialogSubscribe = "subscribe";
   let whitelistFilter = null;
   let promisedAcceptableAdsUrl = getAcceptableAdsUrl();
 
@@ -91,10 +92,10 @@
     });
   }
 
-  function getRecommended()
+  function getRecommendedAds()
   {
     return fetch("subscriptions.xml")
-      .then((resp) => resp.text())
+      .then((response) => response.text())
       .then((text) =>
       {
         let doc = new DOMParser().parseFromString(text, "application/xml");
@@ -168,7 +169,7 @@
     {
       if (url == acceptableAdsUrl)
       {
-        get("#acceptable-ads").checked = false;
+        get("#acceptableAds").checked = false;
         return;
       }
 
@@ -204,12 +205,12 @@
     document.body.dataset.dialog = id;
   }
 
-  function setError(dialogId, message)
+  function setError(dialogId, fieldName)
   {
     let dialog = get(`#dialog-${dialogId}`);
-    if (message)
+    if (fieldName)
     {
-      dialog.dataset.error = message;
+      dialog.dataset.error = fieldName;
     }
     else
     {
@@ -219,7 +220,7 @@
 
   function populateLists()
   {
-    Promise.all([getInstalled(), getRecommended()])
+    Promise.all([getInstalled(), getRecommendedAds()])
       .then(([installed, recommended]) =>
       {
         let listRecommended = get("#subscriptions-recommended");
@@ -231,7 +232,7 @@
               if (ev.target.classList.contains("installed"))
                 return;
 
-              setDialog("subscribe", {title, url});
+              setDialog(dialogSubscribe, {title, url});
             }
           );
         }
@@ -251,7 +252,7 @@
 
   function onChange(ev)
   {
-    if (ev.target.id != "acceptable-ads")
+    if (ev.target.id != "acceptableAds")
       return;
 
     promisedAcceptableAdsUrl.then((acceptableAdsUrl) =>
@@ -290,11 +291,11 @@
 
     if (!title)
     {
-      setError("subscribe", "title");
+      setError(dialogSubscribe, "title");
     }
     else if (!url)
     {
-      setError("subscribe", "url");
+      setError(dialogSubscribe, "url");
     }
     else
     {
@@ -334,7 +335,7 @@
         {
           case "addSubscription":
             let [subscription] = msg.args;
-            setDialog("subscribe", {
+            setDialog(dialogSubscribe, {
               title: subscription.title,
               url: subscription.url
             });
