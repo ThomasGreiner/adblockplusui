@@ -15,6 +15,8 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* globals getDocLink */
+
 "use strict";
 
 const {getMessage} = ext.i18n;
@@ -37,7 +39,7 @@ function getAll(selector, origin)
 function create(parent, tagName, content, attributes, onclick)
 {
   let element = document.createElement(tagName);
-  
+
   if (typeof content == "string")
   {
     element.textContent = content;
@@ -220,11 +222,8 @@ function populateLists()
     .then(([installed, recommended]) =>
     {
       let listRecommended = get("#subscriptions-recommended");
-      for (let subscription of recommended)
+      for (let {title, url} of recommended)
       {
-        let title = subscription.title;
-        let url = subscription.url;
-
         create(listRecommended, "li", title, {"data-url": url},
           (ev) =>
           {
@@ -294,7 +293,7 @@ function onSubmit(ev)
   }
   else if (!url)
   {
-    setError("subscribe", "url")
+    setError("subscribe", "url");
   }
   else
   {

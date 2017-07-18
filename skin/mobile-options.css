@@ -52,6 +52,12 @@ h1::before
   content: "";
 }
 
+html[dir="rtl"] h1::before
+{
+  left: auto;
+  right: -25px;
+}
+
 h2
 {
   font-size: 1em;
@@ -133,7 +139,7 @@ input[type="text"]:not(:placeholder-shown) ~ .error
   display: flex;
 }
 
-.toggle-container > .grow
+.toggle-container > span
 {
   flex-grow: 1;
 }
