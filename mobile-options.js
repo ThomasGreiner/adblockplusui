@@ -269,6 +269,24 @@
   }
   document.addEventListener("change", onChange);
 
+  function toggleWhitelistFilter(checkbox)
+  {
+    ext.backgroundPage.sendMessage(
+      {
+        type: (checkbox.checked) ? "filters.remove" : "filters.add",
+        text: whitelistFilter
+      }, (errors) =>
+      {
+        if (errors.length < 1)
+          return;
+
+        console.error(errors);
+        checkbox.checked = !checkbox.checked;
+      }
+    );
+    ev.preventDefault();
+  }
+
   function onClick(ev)
   {
     switch (ev.target.dataset.action)
@@ -278,6 +296,9 @@
         break;
       case "open-dialog":
         setDialog(ev.target.dataset.dialog);
+        break;
+      case "toggle-enabled":
+        toggleWhitelistFilter(ev.target);
         break;
     }
   }
@@ -307,25 +328,6 @@
   }
   document.addEventListener("submit", onSubmit);
 
-  function onToggleWhitelistFilter(ev)
-  {
-    let checkbox = ev.target;
-    ext.backgroundPage.sendMessage(
-      {
-        type: (checkbox.checked) ? "filters.remove" : "filters.add",
-        text: whitelistFilter
-      }, (errors) =>
-      {
-        if (errors.length < 1)
-          return;
-
-        console.error(errors);
-        checkbox.checked = !checkbox.checked;
-      }
-    );
-    ev.preventDefault();
-  }
-
   function onMessage(msg)
   {
     switch (msg.type)
@@ -352,7 +354,6 @@
 
             let checkbox = get("#enabled");
             checkbox.checked = !whitelisted;
-            checkbox.addEventListener("click", onToggleWhitelistFilter);
 
             get("#enabled-container").hidden = false;
             break;
