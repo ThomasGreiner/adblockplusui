@@ -44,7 +44,7 @@ body
   text-align: center;
   font-family: "Source Sans Pro", sans-serif;
   font-size: 14px;
-  color: #3E4347;
+  color: #494949;
 }
 
 main,
@@ -91,7 +91,7 @@ a:link,
 a:visited
 {
   text-decoration: none;
-  color: #0A9BD0;
+  color: #099DD1;
 }
 
 [hidden]
@@ -117,16 +117,16 @@ ul > li
   display: flex;
   align-items: center;
   box-sizing: border-box;
-  min-height: 36px;
+  min-height: 46px;
   padding: 5px 10px;
-  border: 1px solid #BCBCBC;
+  border: 1px solid #BBBBBB;
   border-bottom: none;
   list-style: none;
 }
 
 ul > li > span
 {
-  flex: 1;
+  flex: auto;
   padding: 10px;
   word-wrap: break-word;
   overflow: hidden;
@@ -139,12 +139,12 @@ input[type="text"]
   min-width: 220px;
   padding: 5px 0;
   border: 0;
-  border-bottom: 1px solid #BCBCBC;
+  border-bottom: 1px solid #BBBBBB;
 }
 
 input[type="text"]::placeholder
 {
-  color: #9E9E9E;
+  color: #BBBBBB;
 }
 
 input[type="text"]:focus::placeholder
@@ -165,7 +165,7 @@ input[type="text"]:not(:placeholder-shown) ~ .error
 
 .toggle-container > span
 {
-  flex-grow: 1;
+  flex: auto;
 }
 
 .toggle-container input
@@ -190,19 +190,20 @@ input:checked + .toggle-image
 button
 {
   width: 100%;
-  height: 45px;
+  height: 46px; /* equal to height of list item */
   border: none;
   font-weight: 600;
   text-transform: uppercase;
-  color: #0A9BD0;
+  color: #099DD1;
   background: none;
 }
 
 button.primary,
 button.secondary
 {
-  height: 36px;
+  height: auto;
   margin: 5px 0;
+  padding: 10px;
   border: 1px solid;
   border-radius: 2px;
 }
@@ -210,13 +211,13 @@ button.secondary
 button.primary
 {
   color: #FFF;
-  border-color: #0A9BD0;
-  background-color: #0A9BD0;
+  border-color: #099DD1;
+  background-color: #099DD1;
 }
 
 button.secondary
 {
-  border-color: #BCBCBC;
+  border-color: #BBBBBB;
 }
 
 button.remove
@@ -224,14 +225,16 @@ button.remove
   width: 36px;
   height: 36px;
   padding: 0;
-  background-color: #0A9BD0;
+  background-color: #099DD1;
   mask: url(mobile/trash.svg) center/19px no-repeat;
 }
 
 ul + button
 {
   width: 100%;
-  border: 1px solid #BCBCBC;
+  padding: 0 20px; /* based on margin and padding of list item */
+  border: 1px solid #BBBBBB;
+  text-align: start;
 }
 
 /* Dialogs */
@@ -255,7 +258,7 @@ ul + button
 {
   max-width: 25em;
   padding: 0;
-  border: 1px solid #BCBCBC;
+  border: 1px solid #BBBBBB;
   background-color: #FFF;
 }
 
@@ -289,7 +292,7 @@ ul + button
   display: flex;
   margin: 0;
   padding: 0;
-  border-top: 1px solid #BCBCBC;
+  border-top: 1px solid #BBBBBB;
 }
 
 [role="dialog"] input[type="text"]
@@ -302,7 +305,7 @@ ul + button
   order: 3;
   margin-top: 5px;
   font-size: 12px;
-  color: #D1142A;
+  color: #C11D26;
 }
 
 [role="dialog"]:not([data-error]) .error,
@@ -315,7 +318,7 @@ ul + button
 #dialog-subscribe[data-error="title"] [name="title"]:placeholder-shown,
 #dialog-subscribe[data-error="url"] [name="url"]:placeholder-shown
 {
-  border-color: #D1142A;
+  border-color: #C11D26;
 }
 
 body:not([data-dialog]) #dialog,
@@ -347,7 +350,7 @@ body:not([data-dialog="subscribe"]) #dialog-subscribe
 
 #dialog-recommended ul li.installed
 {
-  color: #A1A1A1;
+  color: #BBBBBB;
 }
 
 #dialog-recommended ul li::before
@@ -361,7 +364,7 @@ body:not([data-dialog="subscribe"]) #dialog-subscribe
 
 #dialog-recommended ul li.installed::before
 {
-  background-color: #A1A1A1;
+  background-color: #BBBBBB;
   mask: url(mobile/checkmark.svg) center/cover no-repeat;
 }
 
