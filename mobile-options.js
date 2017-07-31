@@ -291,7 +291,6 @@
     {
       console.error("Whitelist filter hasn't been initialized yet");
     }
-    ev.preventDefault();
   }
 
   function onClick(ev)
@@ -306,6 +305,7 @@
         break;
       case "toggle-enabled":
         toggleWhitelistFilter(ev.target);
+        ev.preventDefault();
         break;
     }
   }
