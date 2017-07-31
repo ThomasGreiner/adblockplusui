@@ -14,11 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
+@font-face
+{
+  font-family: "Source Sans Pro";
+  font-weight: 300;
+  font-style: normal;
+  src: url("fonts/Source-Sans-Pro/300.woff2") format("woff2");
+}
+
+@font-face
+{
+  font-family: "Source Sans Pro";
+  font-weight: 400;
+  font-style: normal;
+  src: url("fonts/Source-Sans-Pro/400.woff2") format("woff2");
+}
+
+@font-face
+{
+  font-family: "Source Sans Pro";
+  font-weight: 700;
+  font-style: normal;
+  src: url("fonts/Source-Sans-Pro/700.woff2") format("woff2");
+  ;
+}
 
 body
 {
   text-align: center;
-  font-family: sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
   font-size: 14px;
   color: #3E4347;
 }
