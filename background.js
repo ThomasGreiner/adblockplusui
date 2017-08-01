@@ -459,12 +459,12 @@
     }
   ];
   let knownSubscriptions = Object.create(null);
-  for (let subscriptionData of subscriptions)
+  for (let {title, url} of subscriptions)
   {
     let subscription =
-      modules.subscriptionClasses.Subscription.fromURL(subscriptionData.url);
-    subscription.title = subscriptionData.title;
-    knownSubscriptions[subscriptionData.url] = subscription;
+      modules.subscriptionClasses.Subscription.fromURL(url);
+    subscription.title = title;
+    knownSubscriptions[url] = subscription;
   }
   let customSubscription = knownSubscriptions["~user~786254"];
 
@@ -492,8 +492,9 @@
     // so we'll post the message after one second
     setTimeout(() =>
     {
+      let host = "example.com";
       let isWhitelisted = customSubscription.filters
-        .some((filter) => filter.text == `@@||example.com^$document`);
+        .some((filter) => filter.text == `@@||${host}^$document`);
       window.postMessage({
         type: "message",
         payload: {
@@ -502,7 +503,7 @@
           action: "showPageOptions",
           args: [
             {
-              host: "example.com",
+              host,
               whitelisted: isWhitelisted
             }
           ]
