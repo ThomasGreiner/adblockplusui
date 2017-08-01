@@ -39,11 +39,16 @@
   ;
 }
 
+body,
+input
+{
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 14px;
+}
+
 body
 {
   text-align: center;
-  font-family: "Source Sans Pro", sans-serif;
-  font-size: 14px;
   color: #494949;
 }
 
@@ -145,6 +150,7 @@ input[type="text"]
 input[type="text"]::placeholder
 {
   color: #BBBBBB;
+  opacity: 1; /* Firefox sets opacity so we need to override it */
 }
 
 input[type="text"]:focus::placeholder
