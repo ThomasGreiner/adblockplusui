@@ -1,6 +1,6 @@
 /*
  * This file is part of Adblock Plus <https://adblockplus.org/>,
- * Copyright (C) 2006-2017 eyeo GmbH
+ * Copyright (C) 2006-present eyeo GmbH
  *
  * Adblock Plus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -16,7 +16,7 @@
  */
 
 /* globals checkShareResource, getDocLink, i18nFormatDateTime, openSharePopup,
-           E */
+           setLinks, E */
 
 "use strict";
 
@@ -25,8 +25,10 @@
   let filtersMap = Object.create(null);
   let collections = Object.create(null);
   let acceptableAdsUrl = null;
+  let acceptableAdsPrivacyUrl = null;
   let isCustomFiltersLoaded = false;
   let {getMessage} = ext.i18n;
+  let customFilters = [];
   let filterErrors = new Map([
     ["synchronize_invalid_url",
      "options_filterList_lastDownload_invalidURL"],
@@ -38,6 +40,11 @@
      "options_filterList_lastDownload_checksumMismatch"]
   ]);
   const timestampUI = Symbol();
+  const whitelistedDomainRegexp = /^@@\|\|([^/:]+)\^\$document$/;
+  // Period of time in milliseconds
+  const minuteInMs = 60000;
+  const hourInMs = 3600000;
+  const fullDayInMs = 86400000;
 
   function Collection(details)
   {
@@ -77,8 +84,6 @@
 
   Collection.prototype._getItemTitle = function(item, i)
   {
-    if (item.url == acceptableAdsUrl)
-      return getMessage("options_acceptableAds_description");
     if (this.details[i].useOriginalTitle && item.originalTitle)
       return item.originalTitle;
     return item.title || item.url || item.text;
@@ -92,9 +97,9 @@
       // disabled, but only be removed. That way it's grouped together with
       // the "Own filter list" which cannot be disabled either at the bottom
       // of the filter lists in the Advanced tab.
-      if (a.url == acceptableAdsUrl)
+      if (isAcceptableAds(a.url))
         return 1;
-      if (b.url == acceptableAdsUrl)
+      if (isAcceptableAds(b.url))
         return -1;
 
       // Make sure that newly added entries always appear on top in descending
@@ -119,7 +124,8 @@
     this._sortItems();
     for (let j = 0; j < this.details.length; j++)
     {
-      let table = E(this.details[j].id);
+      let detail = this.details[j];
+      let table = E(detail.id);
       let template = table.querySelector("template");
       let listItem = document.createElement("li");
       listItem.appendChild(document.importNode(template.content, true));
@@ -127,12 +133,15 @@
       listItem.setAttribute("data-access", item.url || item.text);
       listItem.setAttribute("role", "section");
 
-      let label = listItem.querySelector(".display");
-      if (item.recommended && label.hasAttribute("data-tooltip"))
+      let tooltip = listItem.querySelector("[data-tooltip]");
+      if (tooltip)
       {
-        let tooltipId = label.getAttribute("data-tooltip");
+        let tooltipId = tooltip.getAttribute("data-tooltip");
         tooltipId = tooltipId.replace("%value%", item.recommended);
-        label.setAttribute("data-tooltip", tooltipId);
+        if (getMessage(tooltipId))
+        {
+          tooltip.setAttribute("data-tooltip", tooltipId);
+        }
       }
 
       for (let control of listItem.querySelectorAll(".control"))
@@ -145,13 +154,11 @@
       }
 
       this._setEmpty(table, null);
-      if (table.hasChildNodes())
-      {
-        table.insertBefore(listItem,
-            table.childNodes[this.items.indexOf(item)]);
-      }
+      if (table.children.length > 0)
+        table.insertBefore(listItem, table.children[this.items.indexOf(item)]);
       else
         table.appendChild(listItem);
+
       this.updateItem(item);
     }
     return length;
@@ -209,7 +216,10 @@
         continue;
 
       let title = this._getItemTitle(item, i);
-      element.querySelector(".display").textContent = title;
+      let displays = element.querySelectorAll(".display");
+      for (let j = 0; j < displays.length; j++)
+        displays[j].textContent = title;
+
       element.setAttribute("aria-label", title);
       if (this.details[i].searchable)
         element.setAttribute("data-search", title.toLowerCase());
@@ -217,13 +227,12 @@
       if (control)
       {
         control.setAttribute("aria-checked", item.disabled == false);
-        if (item.url == acceptableAdsUrl && this == collections.filterLists)
+        if (isAcceptableAds(item.url) && this == collections.filterLists)
           control.disabled = true;
       }
 
-      let dateElement = element.querySelector(".date");
-      let timeElement = element.querySelector(".time");
-      if (dateElement && timeElement)
+      let lastUpdateElement = element.querySelector(".last-update");
+      if (lastUpdateElement)
       {
         let message = element.querySelector(".message");
         if (item.isDownloading)
@@ -243,9 +252,33 @@
         }
         else if (item.lastDownload > 0)
         {
-          let dateTime = i18nFormatDateTime(item.lastDownload * 1000);
-          dateElement.textContent = dateTime[0];
-          timeElement.textContent = dateTime[1];
+          let lastUpdate = item.lastDownload * 1000;
+          let sinceUpdate = Date.now() - lastUpdate;
+          if (sinceUpdate > fullDayInMs)
+          {
+            let lastUpdateDate = new Date(item.lastDownload * 1000);
+            let monthName = lastUpdateDate.toLocaleString(undefined,
+              {month: "short"});
+            let day = lastUpdateDate.getDate();
+            day = day < 10 ? "0" + day : day;
+            lastUpdateElement.textContent = day + " " + monthName + " " +
+              lastUpdateDate.getFullYear();
+          }
+          else if (sinceUpdate > hourInMs)
+          {
+            lastUpdateElement.textContent =
+              getMessage("options_filterList_hours");
+          }
+          else if (sinceUpdate > minuteInMs)
+          {
+            lastUpdateElement.textContent =
+              getMessage("options_filterList_minutes");
+          }
+          else
+          {
+            lastUpdateElement.textContent =
+              getMessage("options_filterList_now");
+          }
           element.classList.remove("show-message");
         }
       }
@@ -302,31 +335,21 @@
     return true;
   }
 
-  collections.popular = new Collection([
+  collections.protection = new Collection([
     {
-      id: "recommend-list-table"
+      id: "recommend-protection-list-table"
     }
   ]);
   collections.langs = new Collection([
     {
       id: "blocking-languages-table",
-      emptyText: ["options_dialog_language_added_empty"]
-    },
-    {
-      id: "blocking-languages-dialog-table",
-      emptyText: ["options_dialog_language_added_empty"]
+      emptyText: ["options_language_empty"]
     }
   ]);
   collections.allLangs = new Collection([
     {
-      id: "all-lang-table",
-      emptyText: ["options_dialog_language_other_empty"],
-      searchable: true
-    }
-  ]);
-  collections.acceptableAds = new Collection([
-    {
-      id: "acceptableads-table"
+      id: "all-lang-table-add",
+      emptyText: ["options_dialog_language_other_empty"]
     }
   ]);
   collections.custom = new Collection([
@@ -340,12 +363,6 @@
       emptyText: ["options_whitelist_empty_1", "options_whitelist_empty_2"]
     }
   ]);
-  collections.customFilters = new Collection([
-    {
-      id: "custom-filters-table",
-      emptyText: ["options_customFilters_empty"]
-    }
-  ]);
   collections.filterLists = new Collection([
     {
       id: "all-filter-lists-table",
@@ -353,43 +370,32 @@
     }
   ]);
 
-  function toggleShowLanguage(subscription)
-  {
-    if (subscription.recommended == "ads")
-    {
-      if (subscription.disabled)
-      {
-        collections.allLangs.addItem(subscription);
-        collections.langs.removeItem(subscription);
-      }
-      else
-      {
-        collections.allLangs.removeItem(subscription);
-        collections.langs.addItem(subscription);
-      }
-    }
-  }
-
   function addSubscription(subscription)
   {
-    let collection;
+    let collection = null;
     if (subscription.recommended)
     {
-      if (subscription.recommended != "ads")
-        collection = collections.popular;
-      else if (subscription.disabled == false)
-        collection = collections.langs;
-      else
-        collection = collections.allLangs;
-    }
-    else if (subscription.url == acceptableAdsUrl)
-      collection = collections.acceptableAds;
-    else
-      collection = collections.custom;
+      if (subscription.recommended == "ads")
+      {
+        if (subscription.disabled == false)
+          collection = collections.langs;
 
-    collection.addItem(subscription);
+        collections.allLangs.addItem(subscription);
+      }
+      else
+      {
+        collection = collections.protection;
+      }
+    }
+    else if (!isAcceptableAds(subscription.url))
+    {
+      collection = collections.custom;
+    }
+
+    if (collection)
+      collection.addItem(subscription);
+
     subscriptionsMap[subscription.url] = subscription;
-    toggleShowLanguage(subscription);
     updateTooltips();
   }
 
@@ -398,21 +404,63 @@
     for (let name in collections)
       collections[name].updateItem(subscription);
 
-    toggleShowLanguage(subscription);
+    if (subscription.recommended == "ads")
+    {
+      if (subscription.disabled)
+        collections.langs.removeItem(subscription);
+      else
+        collections.langs.addItem(subscription);
+    }
+    else if (!subscription.recommended && !isAcceptableAds(subscription.url))
+    {
+      if (subscription.disabled == false)
+      {
+        collections.custom.addItem(subscription);
+        updateTooltips();
+      }
+      else
+      {
+        collections.custom.removeItem(subscription);
+      }
+    }
   }
 
   function updateFilter(filter)
   {
-    let match = filter.text.match(/^@@\|\|([^/:]+)\^\$document$/);
+    let match = filter.text.match(whitelistedDomainRegexp);
     if (match && !filtersMap[filter.text])
     {
       filter.title = match[1];
       collections.whitelist.addItem(filter);
+      if (isCustomFiltersLoaded)
+      {
+        let text = getMessage("options_whitelist_notification", [filter.title]);
+        showNotification(text);
+      }
     }
     else
-      collections.customFilters.addItem(filter);
+    {
+      customFilters.push(filter.text);
+      if (isCustomFiltersLoaded)
+        updateCustomFiltersUi();
+    }
 
     filtersMap[filter.text] = filter;
+  }
+
+  function removeCustomFilter(text)
+  {
+    let index = customFilters.indexOf(text);
+    if (index >= 0)
+      customFilters.splice(index, 1);
+
+    updateCustomFiltersUi();
+  }
+
+  function updateCustomFiltersUi()
+  {
+    let customFiltersListElement = E("custom-filters-raw");
+    customFiltersListElement.value = customFilters.join("\n");
   }
 
   function loadRecommendations()
@@ -487,10 +535,7 @@
   {
     getDocLink(id, (link) =>
     {
-      if (id == "share-general")
-        openSharePopup(link);
-      else
-        location.href = link;
+      location.href = link;
     });
   }
 
@@ -518,13 +563,35 @@
         break;
       }
       case "cancel-custom-filters":
-        E("custom-filters").classList.remove("mode-edit");
+        setCustomFiltersView("read");
+        break;
+      case "change-language-subscription":
+        for (let key in subscriptionsMap)
+        {
+          let subscription = subscriptionsMap[key];
+          let subscriptionType = subscription.recommended;
+          if (subscriptionType == "ads" && subscription.disabled == false)
+          {
+            ext.backgroundPage.sendMessage({
+              type: "subscriptions.remove",
+              url: subscription.url
+            });
+            ext.backgroundPage.sendMessage({
+              type: "subscriptions.add",
+              url: findParentData(element, "access", false)
+            });
+            break;
+          }
+        }
         break;
       case "close-dialog":
         closeDialog();
         break;
       case "edit-custom-filters":
-        editCustomFilters();
+        setCustomFiltersView("write");
+        break;
+      case "hide-notification":
+        hideNotification();
         break;
       case "import-subscription": {
         let url = E("blockingList-textbox").value;
@@ -568,7 +635,19 @@
         },
         () =>
         {
-          E("custom-filters").classList.remove("mode-edit");
+          setCustomFiltersView("read");
+        });
+        break;
+      case "switch-acceptable-ads":
+        let {value} = element;
+        ext.backgroundPage.sendMessage({
+          type: value == "privacy" ? "subscriptions.add" :
+            "subscriptions.remove",
+          url: acceptableAdsPrivacyUrl
+        });
+        ext.backgroundPage.sendMessage({
+          type: value == "ads" ? "subscriptions.add" : "subscriptions.remove",
+          url: acceptableAdsUrl
         });
         break;
       case "switch-tab":
@@ -612,6 +691,27 @@
         });
         break;
     }
+  }
+
+  function setCustomFiltersView(mode)
+  {
+    let customFiltersElement = E("custom-filters-raw");
+    updateCustomFiltersUi();
+    if (mode == "read")
+    {
+      customFiltersElement.disabled = true;
+      if (!customFiltersElement.value)
+      {
+        setCustomFiltersView("empty");
+        return;
+      }
+    }
+    else if (mode == "write")
+    {
+      customFiltersElement.disabled = false;
+    }
+
+    E("custom-filters").dataset.mode = mode;
   }
 
   function onClick(e)
@@ -699,10 +799,6 @@
     let tabContentId = tab.getAttribute("aria-controls");
     let tabContent = document.getElementById(tabContentId);
 
-    // Select sub tabs
-    if (tab.hasAttribute("data-subtab"))
-      selectTabItem(tab.getAttribute("data-subtab"), tabContent, false);
-
     if (tab && focus)
       tab.focus();
 
@@ -730,17 +826,6 @@
   function onDOMLoaded()
   {
     populateLists();
-    function onFindLanguageKeyUp()
-    {
-      let searchStyle = E("search-style");
-      if (!this.value)
-        searchStyle.innerHTML = "";
-      else
-      {
-        searchStyle.innerHTML = "#all-lang-table li:not([data-search*=\"" +
-          this.value.toLowerCase() + "\"]) { display: none; }";
-      }
-    }
 
     // Initialize navigation sidebar
     ext.backgroundPage.sendMessage({
@@ -762,10 +847,7 @@
     // Initialize interactive UI elements
     document.body.addEventListener("click", onClick, false);
     document.body.addEventListener("keyup", onKeyUp, false);
-    let placeholderValue = getMessage("options_dialog_language_find");
-    E("find-language").setAttribute("placeholder", placeholderValue);
-    E("find-language").addEventListener("keyup", onFindLanguageKeyUp, false);
-    let exampleValue = getMessage("options_whitelist_placeholder_example", 
+    let exampleValue = getMessage("options_whitelist_placeholder_example",
       ["www.example.com"]);
     E("whitelisting-textbox").setAttribute("placeholder", exampleValue);
     E("whitelisting-textbox").addEventListener("keyup", (e) =>
@@ -773,13 +855,18 @@
       E("whitelisting-add-button").disabled = !e.target.value;
     }, false);
 
+    getDocLink("acceptable_ads_criteria", (link) =>
+    {
+      setLinks("enable-aa-description", link);
+    });
+
     // Advanced tab
-    let tweaks = document.querySelectorAll("#tweaks li[data-pref]");
-    tweaks = Array.prototype.map.call(tweaks, (checkbox) =>
+    let customize = document.querySelectorAll("#customize li[data-pref]");
+    customize = Array.prototype.map.call(customize, (checkbox) =>
     {
       return checkbox.getAttribute("data-pref");
     });
-    for (let key of tweaks)
+    for (let key of customize)
     {
       getPref(key, (value) =>
       {
@@ -795,74 +882,51 @@
       hidePref("show_devtools_panel", !features.devToolsPanel);
     });
 
-    let filterTextbox = document.querySelector("#custom-filters-add input");
-    placeholderValue = getMessage("options_customFilters_textbox_placeholder");
-    filterTextbox.setAttribute("placeholder", placeholderValue);
-    function addCustomFilters()
+    getDocLink("filterdoc", (link) =>
     {
-      let filterText = filterTextbox.value;
-      sendMessageHandleErrors({
-        type: "filters.add",
-        text: filterText
-      },
-      () =>
-      {
-        filterTextbox.value = "";
-      });
-    }
-    E("custom-filters-add").addEventListener("submit", (e) =>
+      E("link-filters").setAttribute("href", link);
+    });
+
+    getDocLink("subscriptions", (link) =>
     {
-      e.preventDefault();
-      addCustomFilters();
-    }, false);
+      setLinks("filter-lists-description", link);
+    });
+
+    E("custom-filters-raw").setAttribute("placeholder",
+      getMessage("options_customFilters_edit_placeholder", ["/ads/track/*"]));
 
     // Help tab
-    getDocLink("faq", (link) =>
+    getDocLink("adblock_plus_report_issue", (link) =>
     {
-      E("link-faq").setAttribute("href", link);
+      setLinks("report-issue", link);
+    });
+    getDocLink("adblock_plus_report_ad", (link) =>
+    {
+      setLinks("report-ad", link);
+    });
+    getDocLink("adblock_plus_report_bug", (link) =>
+    {
+      setLinks("report-bug", link);
+    });
+    getDocLink("reporter_other_link", (link) =>
+    {
+      setLinks("report-forum", link);
     });
     getDocLink("social_twitter", (link) =>
     {
-      E("link-twitter").setAttribute("href", link);
+      E("twitter").setAttribute("href", link);
     });
     getDocLink("social_facebook", (link) =>
     {
-      E("link-facebook").setAttribute("href", link);
+      E("facebook").setAttribute("href", link);
     });
     getDocLink("social_gplus", (link) =>
     {
-      E("link-gplus").setAttribute("href", link);
-    });
-    getDocLink("social_renren", (link) =>
-    {
-      E("link-renren").setAttribute("href", link);
+      E("google-plus").setAttribute("href", link);
     });
     getDocLink("social_weibo", (link) =>
     {
-      E("link-weibo").setAttribute("href", link);
-    });
-
-    // Set forum link
-    ext.backgroundPage.sendMessage({
-      type: "app.get",
-      what: "platform"
-    },
-    (platform) =>
-    {
-      ext.backgroundPage.sendMessage({
-        type: "app.get",
-        what: "application"
-      },
-      (application) =>
-      {
-        if (platform == "chromium" && application != "opera")
-          application = "chrome";
-
-        getDocLink(application + "_support", (link) =>
-        {
-          E("link-forum").setAttribute("href", link);
-        });
-      });
+      E("weibo").setAttribute("href", link);
     });
 
     E("dialog").addEventListener("keydown", function(e)
@@ -919,6 +983,42 @@
     focusedBeforeDialog.focus();
   }
 
+  function showNotification(text)
+  {
+    E("notification").setAttribute("aria-hidden", false);
+    E("notification-text").textContent = text;
+    setTimeout(hideNotification, 3000);
+  }
+
+  function hideNotification()
+  {
+    E("notification").setAttribute("aria-hidden", true);
+    E("notification-text").textContent = "";
+  }
+
+  function setAcceptableAds()
+  {
+    let option = "none";
+    document.forms["acceptable-ads"].classList.remove("show-dnt-notification");
+    if (acceptableAdsUrl in subscriptionsMap)
+    {
+      option = "ads";
+    }
+    else if (acceptableAdsPrivacyUrl in subscriptionsMap)
+    {
+      option = "privacy";
+
+      if (!navigator.doNotTrack)
+        document.forms["acceptable-ads"].classList.add("show-dnt-notification");
+    }
+    document.forms["acceptable-ads"]["acceptable-ads"].value = option;
+  }
+
+  function isAcceptableAds(url)
+  {
+    return url == acceptableAdsUrl || url == acceptableAdsPrivacyUrl;
+  }
+
   function populateLists()
   {
     subscriptionsMap = Object.create(null);
@@ -947,6 +1047,7 @@
             updateFilter(filter);
 
           isCustomFiltersLoaded = true;
+          setCustomFiltersView("read");
         });
       }
     });
@@ -963,15 +1064,24 @@
         disabled: true
       });
 
-      // Load user subscriptions
       ext.backgroundPage.sendMessage({
-        type: "subscriptions.get",
-        downloadable: true
+        type: "prefs.get",
+        key: "subscriptions_exceptionsurl_privacy"
       },
-      (subscriptions) =>
+      (urlPrivacy) =>
       {
-        for (let subscription of subscriptions)
-          onSubscriptionMessage("added", subscription);
+        acceptableAdsPrivacyUrl = urlPrivacy;
+
+        // Load user subscriptions
+        ext.backgroundPage.sendMessage({
+          type: "subscriptions.get",
+          downloadable: true
+        },
+        (subscriptions) =>
+        {
+          for (let subscription of subscriptions)
+            onSubscriptionMessage("added", subscription);
+        });
       });
     });
   }
@@ -999,21 +1109,6 @@
 
     domain.value = "";
     E("whitelisting-add-button").disabled = true;
-  }
-
-  function editCustomFilters()
-  {
-    if (!isCustomFiltersLoaded)
-    {
-      console.error("Custom filters are not loaded");
-      return;
-    }
-
-    E("custom-filters").classList.add("mode-edit");
-    let filterTexts = [];
-    for (let customFilterItem of collections.customFilters.items)
-      filterTexts.push(customFilterItem.text);
-    E("custom-filters-raw").value = filterTexts.join("\n");
   }
 
   function addEnableSubscription(url, title, homepage)
@@ -1051,8 +1146,11 @@
         break;
       case "removed":
         let knownFilter = filtersMap[filter.text];
-        collections.whitelist.removeItem(knownFilter);
-        collections.customFilters.removeItem(knownFilter);
+        if (whitelistedDomainRegexp.test(knownFilter.text))
+          collections.whitelist.removeItem(knownFilter);
+        else
+          removeCustomFilter(filter.text);
+
         delete filtersMap[filter.text];
         updateShareLink();
         break;
@@ -1091,18 +1189,28 @@
         else
           addSubscription(subscription);
 
+        if (isAcceptableAds(subscription.url))
+          setAcceptableAds();
+
         collections.filterLists.addItem(subscription);
         break;
       case "removed":
-        if (subscription.url == acceptableAdsUrl || subscription.recommended)
+        if (subscription.recommended)
         {
           subscription.disabled = true;
           onSubscriptionMessage("disabled", subscription);
         }
         else
         {
-          collections.custom.removeItem(subscription);
           delete subscriptionsMap[subscription.url];
+          if (isAcceptableAds(subscription.url))
+          {
+            setAcceptableAds();
+          }
+          else
+          {
+            collections.custom.removeItem(subscription);
+          }
         }
         collections.filterLists.removeItem(subscription);
         break;
@@ -1193,20 +1301,6 @@
       checkShareResource(sharedResource, onResult);
   }
 
-  function getMessages(id)
-  {
-    let messages = [];
-    for (let i = 1; true; i++)
-    {
-      let message = ext.i18n.getMessage(id + "_" + i);
-      if (!message)
-        break;
-
-      messages.push(message);
-    }
-    return messages;
-  }
-
   function updateTooltips()
   {
     let anchors = document.querySelectorAll(":not(.tooltip) > [data-tooltip]");
@@ -1219,52 +1313,12 @@
       anchor.parentNode.replaceChild(wrapper, anchor);
       wrapper.appendChild(anchor);
 
-      let topTexts = getMessages(id);
-      let bottomTexts = getMessages(id + "_notes");
-
-      // We have to use native tooltips to avoid issues when attaching a tooltip
-      // to an element in a scrollable list or otherwise it might get cut off
-      if (anchor.hasAttribute("data-tooltip-native"))
-      {
-        let title = topTexts.concat(bottomTexts).join("\n\n");
-        anchor.setAttribute("title", title);
-        continue;
-      }
-
       let tooltip = document.createElement("div");
       tooltip.setAttribute("role", "tooltip");
 
-      let flip = anchor.getAttribute("data-tooltip-flip");
-      if (flip)
-        tooltip.className = "flip-" + flip;
-
-      let imageSource = anchor.getAttribute("data-tooltip-image");
-      if (imageSource)
-      {
-        let image = document.createElement("img");
-        image.src = imageSource;
-        image.alt = "";
-        tooltip.appendChild(image);
-      }
-
-      for (let topText of topTexts)
-      {
-        let paragraph = document.createElement("p");
-        paragraph.innerHTML = topText;
-        tooltip.appendChild(paragraph);
-      }
-      if (bottomTexts.length > 0)
-      {
-        let notes = document.createElement("div");
-        notes.className = "notes";
-        for (let bottomText of bottomTexts)
-        {
-          let paragraph = document.createElement("p");
-          paragraph.innerHTML = bottomText;
-          notes.appendChild(paragraph);
-        }
-        tooltip.appendChild(notes);
-      }
+      let paragraph = document.createElement("p");
+      paragraph.textContent = getMessage(id);
+      tooltip.appendChild(paragraph);
 
       wrapper.appendChild(tooltip);
     }

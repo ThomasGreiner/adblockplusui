@@ -1,6 +1,6 @@
 /*
  * This file is part of Adblock Plus <https://adblockplus.org/>,
- * Copyright (C) 2006-2017 eyeo GmbH
+ * Copyright (C) 2006-present eyeo GmbH
  *
  * Adblock Plus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -103,7 +103,8 @@
     notifications_showui: params.showNotificationUI,
     shouldShowBlockElementMenu: true,
     show_devtools_panel: true,
-    subscriptions_exceptionsurl: "https://easylist-downloads.adblockplus.org/exceptionrules.txt"
+    subscriptions_exceptionsurl: "https://easylist-downloads.adblockplus.org/exceptionrules.txt",
+    subscriptions_exceptionsurl_privacy: "https://easylist-downloads.adblockplus.org/exceptionrules-privacy.txt"
   };
   for (let key of Object.keys(prefs))
   {
@@ -142,6 +143,16 @@
     this._lastDownload = 1234;
     this.homepage = "https://easylist.adblockplus.org/";
     this.downloadStatus = params.downloadStatus;
+
+    switch (this.url)
+    {
+      case prefs.subscriptions_exceptionsurl:
+        this.title = "Allow non-intrusive advertising";
+        break;
+      case prefs.subscriptions_exceptionsurl_privacy:
+        this.title = "Allow only nonintrusive ads that are privacy-friendly";
+        break;
+    }
   }
   Subscription.prototype =
   {
@@ -452,6 +463,10 @@
     {
       title: "Fanboy's Social Blocking List",
       url: `${subscriptionServer}/fanboy-social.txt`
+    },
+    {
+      title: "Adblock Warning Removal List",
+      url: `${subscriptionServer}/antiadblockfilters.txt`
     },
     {
       title: null,

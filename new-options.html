@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
   - This file is part of Adblock Plus <https://adblockplus.org/>,
-  - Copyright (C) 2006-2017 eyeo GmbH
+  - Copyright (C) 2006-present eyeo GmbH
   -
   - Adblock Plus is free software: you can redistribute it and/or modify
   - it under the terms of the GNU General Public License version 3 as
@@ -22,7 +22,6 @@
     <title class="i18n_options_page_title"></title>
     <link rel="stylesheet" href="skin/common.css">
     <link rel="stylesheet" href="skin/new-options.css">
-    <style id="search-style"></style>
     <script src="ext/common.js"></script>
     <script src="ext/content.js"></script>
     <script src="common.js"></script>
@@ -53,7 +52,6 @@
               <span class="i18n_options_tab_whitelist"></span>
             </li>
             <li id="tab-advanced" role="tab" data-tab="advanced"
-                data-subtab="advanced-allFilterLists"
                 aria-controls="content-advanced" tabindex="-1">
               <span class="i18n_options_tab_advanced"></span>
             </li>
@@ -88,85 +86,70 @@
 
         <!-- General tab content -->
         <div id="content-general" role="tabpanel" aria-labelledby="tab-general">
-          <div>
-            <h1 class="i18n_options_blocking_title"></h1>
-            <div class="hbox">
-              <div id="blocking-languages">
-                <div class="option-name">
-                  <span class="i18n_options_language_title"></span>
-                  <span class="i18n_options_readMore"
-                      data-tooltip="options_language_title_tooltip"
-                      data-tooltip-image="skin/tooltips/block.png"></span>
-                </div>
-                <ul id="blocking-languages-table" class="table list">
-                  <template>
-                    <button data-action="toggle-disable-subscription" role="checkbox" class="control" title="options_control_toggle_title"></button>
-                    <label class="display"></label>
-                    <button data-action="remove-subscription" class="delete control" title="options_control_remove_title"></button>
-                  </template>
-                </ul>
-                <div class="controls">
-                  <button data-action="open-dialog" data-dialog="language">
-                    <span class="icon icon-add"></span>
-                    <span class="i18n_options_language_add"></span>
-                  </button>
-                </div>
+          <h1 class="i18n_options_tab_general"></h1>
+          <p class="i18n_options_general_description"></p>
+          <section>
+            <h2 class="i18n_options_privacy_header"></h2>
+            <ul id="recommend-protection-list-table" class="table list">
+              <template>
+                <button data-action="toggle-remove-subscription" role="checkbox" class="control"></button>
+                <label class="display"></label>
+                <span class="i18n_options_readMore" data-tooltip="options_protection_%value%_tooltip"></span>
+              </template>
+            </ul>
+          </section>
+          <section>
+            <h2 class="i18n_options_acceptableAds_header"></h2>
+            <p class="i18n_options_acceptableAds_description"></p>
+            <form id="acceptable-ads">
+              <div>
+                <input data-action="switch-acceptable-ads" type="radio" name="acceptable-ads" value="ads">
+                <label class="i18n_options_acceptableAds_ads_label"></label>
+                <p id="enable-aa-description" class="i18n_options_acceptableAds_ads_description_1"></p>
+                <p class="i18n_options_acceptableAds_ads_description_2"></p>
               </div>
-              <div id="further-blocking">
-                <div class="option-name">
-                  <strong class="i18n_options_more_title"></strong>
-                  <span class="i18n_options_readMore"
-                      data-tooltip="options_more_title_tooltip"
-                      data-tooltip-image="skin/tooltips/more.png"
-                      data-tooltip-flip="horizontal"></span>
-                </div>
-                <div id="custom-wrapper">
-                  <ul id="recommend-list-table" class="table list">
-                    <template>
-                      <button data-action="toggle-remove-subscription" role="checkbox" class="control"></button>
-                      <div class="fill">
-                        <label class="display"
-                            data-tooltip="options_more_%value%_tooltip"
-                            data-tooltip-native></label>
-                      </div>
-                    </template>
-                  </ul>
-                  <ul id="custom-list-table" class="table list">
-                    <template>
-                      <button data-action="toggle-disable-subscription" role="checkbox" class="control" title="options_control_toggle_title"></button>
-                      <label class="display"></label>
-                      <button data-action="remove-subscription" class="delete control" title="options_control_remove_title"></button>
-                    </template>
-                  </ul>
-                </div>
-                <div class="controls">
-                  <button data-action="open-dialog" data-dialog="custom">
-                    <span class="icon icon-add"></span>
-                    <span class="i18n_options_more_add"><span>
-                  </button>
-                </div>
+              <div>
+                <input data-action="switch-acceptable-ads" type="radio" name="acceptable-ads" value="privacy">
+                <label class="i18n_options_acceptableAds_privacy_label"></label>
+                <p class="i18n_options_acceptableAds_privacy_description"></p>
+                <p id="dnt" class="i18n_options_acceptableAds_dnt_notification"></p>
+              </div>
+              <div>
+                <input data-action="switch-acceptable-ads" type="radio" name="acceptable-ads" value="none">
+                <label class="i18n_options_acceptableAds_none_label"></label>
+              </div>
+            </form>
+          </section>
+          <section>
+            <h2 class="i18n_options_language_header"></h2>
+            <p class="i18n_options_language_description"></p>
+            <div id="blocking-languages">
+              <ul id="blocking-languages-table" class="table list">
+                <template>
+                  <label class="display"></label>
+                  <button data-single="hidden" data-action="remove-subscription" class="delete control" title="options_control_remove_title"></button>
+                  <button data-single="visible" data-action="open-dialog" data-dialog="language-change" class="i18n_options_language_change"></button>
+                </template>
+              </ul>
+              <div class="controls">
+                <button data-action="open-dialog" data-dialog="language-add">
+                  <span class="i18n_options_language_add"></span>
+                </button>
               </div>
             </div>
-          </div>
-          <div>
-            <h1 class="i18n_options_exceptions_title"></h1>
-            <div class="hbox">
-              <div id="acceptable-ads">
-                <div class="option-name">
-                  <strong class="i18n_options_acceptableAds_title"></strong>
-                  <span class="i18n_options_readMore"
-                      data-tooltip="options_acceptableAds_title_tooltip"
-                      data-tooltip-image="skin/tooltips/acceptable-ads.png"></span>
-                </div>
-                <ul id="acceptableads-table" class="table list">
-                  <template>
-                    <button data-action="toggle-remove-subscription" role="checkbox" class="control"></button>
-                    <label class="display"></label>
-                  </template>
-                </ul>
-              </div>
-            </div>
-          </div>
+            <p class="i18n_options_language_tip"></p>
+          </section>
+          <section>
+            <h2 class="i18n_options_more_filters_header"></h2>
+            <p class="i18n_options_more_filters_description"></p>
+            <ul id="custom-list-table" class="table list">
+              <template>
+                <label class="display"></label>
+                <button data-action="remove-subscription" class="delete control" title="options_control_remove_title"></button>
+              </template>
+            </ul>
+            <p class="i18n_options_more_filters_note"></p>
+          </section>
         </div>
 
         <!-- Whitelist tab content -->
@@ -196,162 +179,154 @@
         <div id="content-advanced" role="tabpanel"
             aria-labelledby="tab-advanced">
           <div>
-            <h1 class="i18n_options_tweaks_title"></h1>
-            <ul id="tweaks" class="table">
-              <li data-pref="shouldShowBlockElementMenu">
-                <label>
-                  <button role="checkbox" data-action="toggle-pref"></button>
-                  <span class="i18n_options_tweaks_blockElement"></span>
-                </label>
-              </li>
-              <li data-pref="show_devtools_panel">
-                <label>
-                  <button role="checkbox" data-action="toggle-pref"></button>
-                  <span class="i18n_options_tweaks_showDevToolsPanel"></span>
-                </label>
-              </li>
-              <li data-pref="notifications_ignoredcategories">
-                <label>
-                  <button role="checkbox" data-action="toggle-pref"></button>
-                  <span class="i18n_options_tweaks_showNotifications"></span>
-                </label>
-              </li>
-            </ul>
+            <h1 class="i18n_options_tab_advanced"></h1>
+            <p class="i18n_options_advanced_description"></p>
+            <section>
+              <h2 class="i18n_options_customize_header"></h2>
+              <ul id="customize" class="table">
+                <li data-pref="shouldShowBlockElementMenu">
+                  <label>
+                    <button role="checkbox" data-action="toggle-pref"></button>
+                    <span class="i18n_options_customize_blockElement"></span>
+                    <span class="i18n_options_readMore"
+                      data-tooltip="options_customize_blockElement_tooltip"></span>
+                  </label>
+                </li>
+                <li data-pref="show_devtools_panel">
+                  <label>
+                    <button role="checkbox" data-action="toggle-pref"></button>
+                    <span class="i18n_options_customize_showDevToolsPanel"></span>
+                    <span class="i18n_options_readMore"
+                      data-tooltip="options_customize_showDevToolsPanel_tooltip"></span>
+                  </label>
+                </li>
+                <li data-pref="notifications_ignoredcategories">
+                  <label>
+                    <button role="checkbox" data-action="toggle-pref"></button>
+                    <span class="i18n_options_customize_showNotifications"></span>
+                    <span class="i18n_options_readMore"
+                      data-tooltip="options_customize_showNotifications_tooltip"></span>
+                  </label>
+                </li>
+              </ul>
+            </section>
           </div>
 
-          <div>
-            <h1>
-              <span class="i18n_options_filterList_title"></span>
-              <span class="i18n_options_readMore"
-                  data-tooltip="options_filterList_title_tooltip"></span>
-            </h1>
-            <ul class="tabs horizontal" role="tablist" data-action="switch-tab"
-                data-keys="ArrowLeft ArrowUp ArrowRight ArrowDown">
-              <li id="tab-allFilterLists"
-                  class="i18n_options_tab_overview active"
-                  role="tab" data-tab="advanced-allFilterLists"
-                  aria-selected="true" aria-controls="all-filter-lists"
-                  tabindex="0"></li>
-              <li id="tab-customFilters" class="i18n_options_tab_ownList"
-                  role="tab" data-tab="advanced-customFilters"
-                  aria-controls="custom-filters" tabindex="-1"></li>
-            </ul>
-            <div id="filter-lists">
-              <div id="all-filter-lists" role="tabpanel"
-                  aria-labelledby="tab-allFilterLists">
-                <div class="table-header">
-                  <h2 class="i18n_options_column_name"></h2>
-                  <h2 class="i18n_options_column_date"></h2>
+          <section>
+            <h1 class="i18n_options_filterList_title"></h1>
+            <p id="filter-lists-description" class="i18n_options_filterList_description"></p>
+
+            <div id="all-filter-lists-table-header">
+              <h2 class="i18n_options_filterList_column_status"></h2>
+              <h2 class="i18n_options_filterList_column_name"></h2>
+              <h2 class="i18n_options_filterList_column_update"></h2>
+            </div>
+            <ul class="table cols" id="all-filter-lists-table">
+              <template>
+                <button data-action="remove-subscription" class="control delete"></button>
+                <button data-action="toggle-disable-subscription" role="checkbox" class="control">
+                </button>
+                <div class="state">
+                  <span class="i18n_options_filterList_state_active" id="state-active"></span>
+                  <span class="i18n_options_filterList_state_disabled" id="state-disabled"></span>
                 </div>
-                <ul class="table cols" id="all-filter-lists-table">
-                  <template>
-                    <button data-action="toggle-disable-subscription" role="checkbox" class="control"></button>
-                    <div>
-                      <label data-action="open-context-menu" class="display"></label>
-                      <div data-action="open-context-menu" class="arrow">
-                        <div class="context-menu">
-                          <div class="content">
-                            <a class="i18n_options_filterList_updateNow update-subscription" data-action="update-subscription"></a>
-                            <a class="i18n_options_filterList_website website" target="_blank"></a>
-                            <a class="i18n_options_filterList_source source" target="_blank"></a>
-                            <a class="i18n_options_filterList_delete delete" data-action="remove-subscription"></a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <span class="date"></span>
-                    <span class="time"></span>
-                    <span class="message"></span>
-                  </template>
-                  <li class="static">
-                    <button id="own-list" role="checkbox" class="control" aria-checked="true" disabled="true"></button>
-                    <div>
-                      <label for="own-list" class="i18n_options_filterList_own_list"></label>
-                    </div>
-                    <span>
-                      <a class="i18n_options_filterList_edit_own_list"
-                          href="#advanced-customFilters"></a>
-                    </span>
-                  </li>
-                </ul>
-                <div class="controls">
-                  <button data-action="open-dialog" data-dialog="custom">
-                    <span class="icon icon-add"></span>
-                    <span class="i18n_options_filterList_add"></span>
-                  </button>
-                  <button data-action="update-all-subscriptions">
-                    <span class="icon icon-update"></span>
-                    <span class="i18n_options_filterList_update"></span>
-                  </button>
+                <div>
+                  <label class="display"></label>
                 </div>
-              </div>
-              <div id="custom-filters" role="tabpanel"
-                  aria-labelledby="tab-customFilters">
-                <h2 id="custom-filters-header">
-                  <span class="i18n_options_customFilters_title"></span>
-                  <span class="i18n_options_readMore"
-                    data-tooltip="options_customFilters_title_tooltip"></span>
-                </h2>
-                <div id="custom-filters-wrapper">
-                  <div id="custom-filters-list-wrapper">
-                    <ul id="custom-filters-table" class="table list">
-                      <template>
-                        <label class="display"></label>
-                      </template>
+                <span class="last-update"></span>
+                <span class="message"></span>
+                <a data-action="open-context-menu" class="arrow"></a>
+                <div role="menubar" class="context-menu-wrapper">
+                  <div class="context-menu">
+                    <ul class="content" role="menu">
+                      <li role="menuitem">
+                        <a class="i18n_options_filterList_updateNow update-subscription" data-action="update-subscription"></a>
+                      </li>
+                      <li role="menuitem">
+                        <a class="i18n_options_filterList_website website" target="_blank"></a>
+                      </li>
+                      <li role="menuitem">
+                        <a class="i18n_options_filterList_source source" target="_blank"></a>
+                      </li>
+                      <li role="menuitem">
+                        <a class="i18n_options_filterList_delete delete" data-action="remove-subscription"></a>
+                      </li>
                     </ul>
-                    <form id="custom-filters-add" class="controls">
-                      <input type="text"/>
-                      <button class="i18n_options_button_add" type="submit"></button>
-                    </form>
-                  </div>
-                  <textarea id="custom-filters-raw"></textarea>
-                </div>
-                <div id="custom-filters-edit-wrapper" class="controls">
-                  <button id="custom-filters-show-edit" data-action="edit-custom-filters">
-                    <span class="icon icon-edit"></span>
-                    <span class="i18n_options_customFilter_edit"></span>
-                  </button>
-                  <div id="custom-filters-raw-controls">
-                    <button id="custom-filters-raw-save" data-action="save-custom-filters">
-                      <span class="icon icon-save"></span>
-                      <span class="i18n_options_customFilter_save"></span>
-                    </button>
-                    <button data-action="cancel-custom-filters">
-                    <span class="icon icon-cancel"></span>
-                      <span class="i18n_options_customFilter_cancel"></span>
-                    </button>
                   </div>
                 </div>
+              </template>
+            </ul>
+            <div class="controls">
+              <button data-action="open-dialog" data-dialog="custom">
+                <span class="icon icon-add"></span>
+                <span class="i18n_options_filterList_add"></span>
+              </button>
+              <button data-action="update-all-subscriptions">
+                <span class="icon icon-update"></span>
+                <span class="i18n_options_filterList_update"></span>
+              </button>
+            </div>
+          </section>
+
+          <section>
+            <h1 class="i18n_options_customFilters_title"></h1>
+            <p class="i18n_options_customFilters_description"></p>
+            <h2 class="i18n_options_customFilters_widget_title"></h2>
+            <div id="custom-filters">
+              <div id="empty-custom-filters">
+                <p class="i18n_options_customFilters_tip"></p>
+                <button class="i18n_options_customFilters_start" data-action="edit-custom-filters">
+                </button>
+                <p>
+                  <a class="i18n_options_customFilters_learn" id="link-filters" target="_blank"></a>
+                </p>
+              </div>
+              <textarea id="custom-filters-raw" rows="15"></textarea>
+              <button id="custom-filters-edit" class="i18n_options_customFilter_edit" data-action="edit-custom-filters">
+              </button>
+              <div id="custom-filters-raw-controls">
+                <button class="i18n_options_customFilter_save" data-action="save-custom-filters">
+                </button>
+                <button class="i18n_options_customFilter_cancel" data-action="cancel-custom-filters">
+                </button>
               </div>
             </div>
-          </div>
+          </section>
         </div>
 
         <!-- Help tab content -->
         <div id="content-help" role="tabpanel" aria-labelledby="tab-help">
-          <h1 class="i18n_options_faq_title"></h1>
-          <p class="i18n_options_faq_description"></p>
-          <p>
-             <a id="link-faq" class="i18n_options_faq_title" target="_blank"></a>
-          </p>
-          <h1 class="i18n_options_forum_title"></h1>
-          <p class="i18n_options_forum_description"></p>
-          <p>
-             <a id="link-forum" class="i18n_options_forum_link" target="_blank"></a>
-          </p>
-          <h1 class="i18n_options_media_title"></h1>
-          <p class="i18n_options_media_description"></p>
-          <p>
-            <span id="share-general">
-              <a id="link-twitter" target="_blank">Twitter</a>
-              <a id="link-facebook" target="_blank">Facebook</a>
-              <a id="link-gplus" target="_blank">Google+</a>
-            </span>
-            <span id="share-chinese">
-              <a id="link-renren" target="_blank">renren</a>
-              <a id="link-weibo" target="_blank">weibo</a>
-            </span>
-          </p>
+          <h1 class="i18n_options_tab_help"></h1>
+          <p class="i18n_options_help_description"></p>
+          <section>
+            <h2 class="i18n_options_support_title"></h2>
+            <ul>
+              <li id="report-issue" class="i18n_options_report_issue"></li>
+              <li id="report-ad" class="i18n_options_report_ad"></li>
+              <li id="report-bug" class="i18n_options_report_bug"></li>
+              <li id="report-forum" class="i18n_options_report_forum"></li>
+            </ul>
+          </section>
+          <section>
+            <h2 class="i18n_options_social_title"></h2>
+            <p class="i18n_options_social_description"></p>
+            <div id="social">
+              <ul id="social-general">
+                <li><a id="twitter">Twitter</a></li>
+                <li><a id="facebook">Facebook</a></li>
+                <li><a id="google-plus">Google Plus</a></li>
+              </ul>
+              <ul id="social-chinese">
+                <li><a id="weibo">Weibo</a></li>
+              </ul>
+              <p>
+                <strong>
+                  <span class="i18n_options_email"></span>
+                  <a href="mailto:support@adblockplus.org">support@adblockplus.org</a>
+                </strong>
+              </p>
+            </div>
+          </section>
         </div>
       </div>
     </div>
@@ -361,36 +336,25 @@
       <header>
         <span id="dialog-title">
           <span id="dialog-title-custom" class="i18n_options_dialog_custom_title"></span>
-          <span id="dialog-title-language" class="i18n_options_dialog_language_title"></span>
+          <span id="dialog-title-language-add" class="i18n_options_dialog_language_title"></span>
+          <span id="dialog-title-language-change" class="i18n_options_dialog_language_title"></span>
           <span id="dialog-title-predefined" class="i18n_options_dialog_predefined_title"></span>
         </span>
         <button id="dialog-close" class="i18n_options_close focus-first" data-action="close-dialog"></button>
       </header>
       <div id="dialog-body" class="content">
         <!-- Add language subscription -->
-        <div id="dialog-content-language" class="dialog-content">
-          <div class="dialog-content-block">
-            <h3 class="i18n_options_dialog_language_added"></h3>
-            <ul id="blocking-languages-dialog-table" class="table list">
-              <template>
+        <div id="dialog-content-language-add" class="dialog-content">
+          <ul id="all-lang-table-add" class="table list">
+            <template>
+              <button data-action="add-language-subscription,close-dialog" class="control add" role="checkbox">
                 <label class="display"></label>
-              </template>
-            </ul>
-          </div>
-          <div id="other-language" class="dialog-content-block">
-            <div>
-              <label for="find-language" class="i18n_options_dialog_language_other"></label>
-              <input type="search" id="find-language" class="default-focus" />
-            </div>
-            <ul id="all-lang-table" class="table list">
-              <template>
-                <button data-action="add-language-subscription" class="button-add control">
-                  +<span class="i18n_options_button_add"></span>
-                </button>
+              </button>
+              <button data-action="change-language-subscription,close-dialog" class="control change" role="checkbox">
                 <label class="display"></label>
-              </template>
-            </ul>
-          </div>
+              </button>
+            </template>
+          </ul>
         </div>
         <!-- Add custom subscription -->
         <div id="dialog-content-custom" class="dialog-content">
@@ -403,7 +367,7 @@
           </div>
           <div class="dialog-content-block">
             <h3 class="i18n_options_dialog_edit_own_list"></h3>
-            <button class="i18n_options_dialog_create_own_list" data-action="close-dialog,switch-tab,edit-custom-filters" data-tab="advanced-customFilters"></button>
+            <button class="i18n_options_dialog_create_own_list" data-action="close-dialog,switch-tab,edit-custom-filters" data-tab="advanced"></button>
           </div>
         </div>
         <!-- Add predefined subscription -->
@@ -417,6 +381,13 @@
       </div>
       <!-- Placeholder element to determine when to wrap focus around -->
       <span class="focus-last" tabindex="0"></span>
+    </div>
+     <!-- Notification -->
+    <div id="notification" aria-hidden="true" aria-live="polite">
+      <strong id="notification-text"></strong>
+      <button id="hide-notification" data-action="hide-notification">
+        <span class="i18n_options_notification_hide sr-only"></span>
+      </button>
     </div>
   </body>
 </html>

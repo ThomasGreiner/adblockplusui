@@ -1,6 +1,6 @@
 /*
  * This file is part of Adblock Plus <https://adblockplus.org/>,
- * Copyright (C) 2006-2017 eyeo GmbH
+ * Copyright (C) 2006-present eyeo GmbH
  *
  * Adblock Plus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals checkShareResource, getDocLink, openSharePopup, E */
+/* globals checkShareResource, getDocLink, openSharePopup, setLinks, E */
 
 "use strict";
 
@@ -110,31 +110,6 @@
     {
       openSharePopup(link);
     });
-  }
-
-  function setLinks(id, ...args)
-  {
-    let element = E(id);
-    if (!element)
-    {
-      return;
-    }
-
-    let links = element.getElementsByTagName("a");
-
-    for (let i = 0; i < links.length; i++)
-    {
-      if (typeof args[i] == "string")
-      {
-        links[i].href = args[i];
-        links[i].setAttribute("target", "_blank");
-      }
-      else if (typeof args[i] == "function")
-      {
-        links[i].href = "javascript:void(0);";
-        links[i].addEventListener("click", args[i], false);
-      }
-    }
   }
 
   function openFilters()
