@@ -278,7 +278,8 @@
         {
           type: (toggle.checked) ? "filters.remove" : "filters.add",
           text: whitelistFilter
-        }, (errors) =>
+        },
+        (errors) =>
         {
           if (errors.length < 1)
             return;
