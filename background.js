@@ -162,7 +162,7 @@
     {
       this._lastDownload = value;
       modules.filterNotifier.FilterNotifier.emit("subscription.lastDownload",
-                                                 this);
+        this);
     }
   };
   Subscription.fromURL = function(url)
@@ -216,7 +216,7 @@
         {
           knownSubscriptions[subscription.url] = fromURL(subscription.url);
           modules.filterNotifier.FilterNotifier.emit("subscription.added",
-                                                     subscription);
+            subscription);
         }
       },
 
@@ -228,7 +228,7 @@
         {
           delete knownSubscriptions[subscription.url];
           modules.filterNotifier.FilterNotifier.emit("subscription.removed",
-                                                     subscription);
+            subscription);
         }
       },
 
@@ -251,7 +251,7 @@
           {
             customSubscription.filters.splice(i, 1);
             modules.filterNotifier.FilterNotifier.emit("filter.removed",
-                                                       filter);
+              filter);
             return;
           }
         }

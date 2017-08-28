@@ -36,9 +36,11 @@
   const {Synchronizer} = require("synchronizer");
 
   const info = require("info");
-  const {Subscription,
-         DownloadableSubscription,
-         SpecialSubscription} = require("subscriptionClasses");
+  const {
+    Subscription,
+    DownloadableSubscription,
+    SpecialSubscription
+  } = require("subscriptionClasses");
 
   // Some modules doesn't exist on Firefox. Moreover,
   // require() throws an exception on Firefox in that case.
@@ -236,9 +238,9 @@
       let filters = [];
       const {checkWhitelisted} = require("whitelisting");
 
-      if (Prefs.enabled && !checkWhitelisted(sender.page, sender.frame,
-                            RegExpFilter.typeMap.DOCUMENT |
-                            RegExpFilter.typeMap.ELEMHIDE))
+      let isWhitelisted = checkWhitelisted(sender.page, sender.frame,
+        RegExpFilter.typeMap.DOCUMENT | RegExpFilter.typeMap.ELEMHIDE);
+      if (Prefs.enabled && !isWhitelisted)
       {
         let {hostname} = sender.frame.url;
         filters = ElemHideEmulation.getRulesForDomain(hostname);

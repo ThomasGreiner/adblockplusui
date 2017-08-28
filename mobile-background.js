@@ -1,3 +1,5 @@
+"use strict";
+
 browser.tabs.getCurrent((currentTab) =>
 {
   browser.tabs.create({url: "mobile-options.html"}, (optionsTab) =>

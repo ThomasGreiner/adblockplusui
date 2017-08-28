@@ -198,7 +198,8 @@
     let fields = getAll(`#dialog-${id} input`);
     for (let field of fields)
     {
-      field.value = (options && field.name in options) ? options[field.name] : "";
+      let {name} = field;
+      field.value = (options && name in options) ? options[name] : "";
     }
     setError(id, null);
 
@@ -396,8 +397,8 @@
             removeSubscription(subscription.url);
             break;
           case "title":
-            // We're also receiving these messages for subscriptions that are not
-            // installed so we shouldn't add those by accident
+            // We're also receiving these messages for subscriptions that are
+            // not installed so we shouldn't add those by accident
             setSubscription(subscription, false);
             break;
         }
