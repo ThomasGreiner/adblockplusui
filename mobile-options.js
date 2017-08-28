@@ -23,6 +23,8 @@
   const {getMessage} = ext.i18n;
 
   const dialogSubscribe = "subscribe";
+  const idAcceptableAds = "acceptableAds";
+  const idRecommended = "subscriptions-recommended";
   let whitelistFilter = null;
   let promisedAcceptableAdsUrl = getAcceptableAdsUrl();
 
@@ -134,7 +136,7 @@
     {
       if (url == acceptableAdsUrl)
       {
-        get("#acceptableAds").checked = true;
+        get(`#${idAcceptableAds}`).checked = true;
         return;
       }
 
@@ -154,7 +156,7 @@
           () => uninstallSubscription(url)
         );
 
-        let recommended = get(`#subscriptions-recommended [data-url="${url}"]`);
+        let recommended = get(`#${idRecommended} [data-url="${url}"]`);
         if (recommended)
         {
           recommended.classList.add("installed");
@@ -169,7 +171,7 @@
     {
       if (url == acceptableAdsUrl)
       {
-        get("#acceptableAds").checked = false;
+        get(`#${idAcceptableAds}`).checked = false;
         return;
       }
 
@@ -179,7 +181,7 @@
         installed.parentNode.removeChild(installed);
       }
 
-      let recommended = get(`#subscriptions-recommended [data-url="${url}"]`);
+      let recommended = get(`#${idRecommended} [data-url="${url}"]`);
       if (recommended)
       {
         recommended.classList.remove("installed");
@@ -224,7 +226,7 @@
     Promise.all([getInstalled(), getRecommendedAds()])
       .then(([installed, recommended]) =>
       {
-        let listRecommended = get("#subscriptions-recommended");
+        let listRecommended = get(`#${idRecommended}`);
         for (let {title, url} of recommended)
         {
           create(listRecommended, "li", title, {"data-url": url},
@@ -253,7 +255,7 @@
 
   function onChange(ev)
   {
-    if (ev.target.id != "acceptableAds")
+    if (ev.target.id != idAcceptableAds)
       return;
 
     promisedAcceptableAdsUrl.then((acceptableAdsUrl) =>
