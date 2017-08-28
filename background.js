@@ -136,6 +136,33 @@
     }
   };
 
+  let subscriptionServer = "https://easylist-downloads.adblockplus.org";
+  let subscriptionDetails = {
+    [`${subscriptionServer}/easylistgermany+easylist.txt`]: {
+      title: "EasyList Germany+EasyList",
+      installed: true
+    },
+    [`${subscriptionServer}/exceptionrules.txt`]: {
+      title: "Allow non-intrusive advertising",
+      installed: true
+    },
+    [`${subscriptionServer}/exceptionrules-privacy.txt`]: {
+      title: "Allow only nonintrusive ads that are privacy-friendly"
+    },
+    [`${subscriptionServer}/fanboy-social.txt`]: {
+      title: "Fanboy's Social Blocking List",
+      installed: true
+    },
+    [`${subscriptionServer}/antiadblockfilters.txt`]: {
+      title: "Adblock Warning Removal List",
+      installed: true,
+      disabled: true
+    },
+    "~user~786254": {
+      installed: true
+    }
+  };
+
   function Subscription(url)
   {
     this.url = url;
@@ -144,14 +171,11 @@
     this.homepage = "https://easylist.adblockplus.org/";
     this.downloadStatus = params.downloadStatus;
 
-    switch (this.url)
+    let details = subscriptionDetails[this.url];
+    if (details)
     {
-      case prefs.subscriptions_exceptionsurl:
-        this.title = "Allow non-intrusive advertising";
-        break;
-      case prefs.subscriptions_exceptionsurl_privacy:
-        this.title = "Allow only nonintrusive ads that are privacy-friendly";
-        break;
+      this.disabled = !!details.disabled;
+      this.title = details.title || "";
     }
   }
   Subscription.prototype =
@@ -450,36 +474,14 @@
   ];
   let knownFilters = filters.map(modules.filterClasses.Filter.fromText);
 
-  let subscriptionServer = "https://easylist-downloads.adblockplus.org";
-  let subscriptions = [
-    {
-      title: "EasyList Germany+EasyList",
-      url: `${subscriptionServer}/easylistgermany+easylist.txt`
-    },
-    {
-      title: "Allow non-intrusive advertising",
-      url: `${subscriptionServer}/exceptionrules.txt`
-    },
-    {
-      title: "Fanboy's Social Blocking List",
-      url: `${subscriptionServer}/fanboy-social.txt`
-    },
-    {
-      title: "Adblock Warning Removal List",
-      url: `${subscriptionServer}/antiadblockfilters.txt`
-    },
-    {
-      title: null,
-      url: "~user~786254"
-    }
-  ];
   let knownSubscriptions = Object.create(null);
-  for (let {title, url} of subscriptions)
+  for (let url in subscriptionDetails)
   {
-    let subscription =
+    if (!subscriptionDetails[url].installed)
+      continue;
+
+    knownSubscriptions[url] =
       modules.subscriptionClasses.Subscription.fromURL(url);
-    subscription.title = title;
-    knownSubscriptions[url] = subscription;
   }
   let customSubscription = knownSubscriptions["~user~786254"];
 
