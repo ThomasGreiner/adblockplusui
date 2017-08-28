@@ -293,14 +293,6 @@ ul + button
   font-size: 10px;
 }
 
-[role="dialog"] menu
-{
-  display: flex;
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid #BBBBBB;
-}
-
 [role="dialog"] input[type="text"]
 {
   order: 2;
@@ -373,7 +365,8 @@ body:not([data-dialog="subscribe"]) #dialog-subscribe
   mask: url(mobile/checkmark.svg) center/cover no-repeat;
 }
 
-#dialog-recommended menu
+#dialog-recommended > button
 {
-  flex-shrink: 0;
+  border-width: 1px 0 0 0;
+  text-align: center;
 }
